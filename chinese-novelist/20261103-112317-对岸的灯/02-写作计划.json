@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "novelName": "对岸的灯",
+  "projectPath": "./chinese-novelist/20261103-112317-对岸的灯",
+  "totalChapters": 20,
+  "minWordsPerChapter": 3000,
+  "maxWordsPerChapter": 5000,
+  "createdAt": "2026-11-03T11:23:17Z",
+  "updatedAt": "2026-11-03T12:25:13Z",
+  "status": "completed",
+  "writingMode": "serial",
+  "chapters": [
+    {
+      "chapterNumber": 1,
+      "title": "灯火隔岸",
+      "filePath": "第01章-灯火隔岸.md",
+      "status": "completed",
+      "wordCount": 3443,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 2,
+      "title": "听诊器外",
+      "filePath": "第02章-听诊器外.md",
+      "status": "completed",
+      "wordCount": 3043,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 3,
+      "title": "署名被谁拿走",
+      "filePath": "第03章-署名被谁拿走.md",
+      "status": "completed",
+      "wordCount": 3104,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 4,
+      "title": "粥与血压计",
+      "filePath": "第04章-粥与血压计.md",
+      "status": "completed",
+      "wordCount": 3147,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 5,
+      "title": "选题在谁手里",
+      "filePath": "第05章-选题在谁手里.md",
+      "status": "completed",
+      "wordCount": 3006,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 6,
+      "title": "雨夜会诊",
+      "filePath": "第06章-雨夜会诊.md",
+      "status": "completed",
+      "wordCount": 3620,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 7,
+      "title": "对岸有人等",
+      "filePath": "第07章-对岸有人等.md",
+      "status": "completed",
+      "wordCount": 3549,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 8,
+      "title": "半真半假",
+      "filePath": "第08章-半真半假.md",
+      "status": "completed",
+      "wordCount": 3541,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 9,
+      "title": "沉默的红点",
+      "filePath": "第09章-沉默的红点.md",
+      "status": "completed",
+      "wordCount": 3575,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 10,
+      "title": "中点·灯塔",
+      "filePath": "第10章-中点·灯塔.md",
+      "status": "completed",
+      "wordCount": 3633,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 11,
+      "title": "母亲的门槛",
+      "filePath": "第11章-母亲的门槛.md",
+      "status": "completed",
+      "wordCount": 3368,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 12,
+      "title": "一起说谎的夜",
+      "filePath": "第12章-一起说谎的夜.md",
+      "status": "completed",
+      "wordCount": 3068,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 13,
+      "title": "为你好",
+      "filePath": "第13章-为你好.md",
+      "status": "completed",
+      "wordCount": 3020,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 14,
+      "title": "我自己可以",
+      "filePath": "第14章-我自己可以.md",
+      "status": "completed",
+      "wordCount": 3002,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 15,
+      "title": "谁把灯关掉",
+      "filePath": "第15章-谁把灯关掉.md",
+      "status": "completed",
+      "wordCount": 3000,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 16,
+      "title": "最低处",
+      "filePath": "第16章-最低处.md",
+      "status": "completed",
+      "wordCount": 3287,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 17,
+      "title": "证词",
+      "filePath": "第17章-证词.md",
+      "status": "completed",
+      "wordCount": 3157,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 18,
+      "title": "公开的岸",
+      "filePath": "第18章-公开的岸.md",
+      "status": "completed",
+      "wordCount": 3029,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 19,
+      "title": "把灯重新打开",
+      "filePath": "第19章-把灯重新打开.md",
+      "status": "completed",
+      "wordCount": 3066,
+      "wordCountPass": true,
+      "retryCount": 0
+    },
+    {
+      "chapterNumber": 20,
+      "title": "对岸的灯",
+      "filePath": "第20章-对岸的灯.md",
+      "status": "completed",
+      "wordCount": 3006,
+      "wordCountPass": true,
+      "retryCount": 0
+    }
+  ],
+  "totalWords": 64664
+}
