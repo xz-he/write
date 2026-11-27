@@ -1,14 +1,14 @@
-import { YEARS } from '../data/entries'
-
 type Props = {
   activeYear: number
+  years: number[]
   onSelect: (year: number) => void
 }
 
-export function YearTabs({ activeYear, onSelect }: Props) {
+export function YearTabs({ activeYear, years, onSelect }: Props) {
+  const list = years.length > 0 ? years : [activeYear]
   return (
     <nav className="year-tabs" aria-label="年份标签">
-      {YEARS.map((year, i) => (
+      {list.map((year, i) => (
         <button
           key={year}
           type="button"

@@ -1,34 +1,39 @@
-import { useCallback, useState } from 'react'
-import { FlipBook } from './components/FlipBook'
+import { useState } from 'react'
+import { AdminPanel } from './components/AdminPanel'
+import { FlipBook3D } from './components/FlipBook3D'
 import { Landing } from './components/Landing'
 import { TopBar } from './components/TopBar'
+import { useHandbook } from './data/HandbookContext'
 
 export default function App() {
+  const { meta, wordCount } = useHandbook()
   const [opened, setOpened] = useState(false)
-  const [toast, setToast] = useState<string | null>(null)
-
-  const showToast = useCallback((msg: string) => {
-    setToast(msg)
-    window.setTimeout(() => setToast(null), 2200)
-  }, [])
+  const [adminOpen, setAdminOpen] = useState(false)
 
   return (
     <div className={`app${opened ? ' is-open' : ''}`}>
       {opened ? (
         <>
-          <TopBar onBack={() => setOpened(false)} onMore={() => showToast('示例手册 · 编辑功能即将到来')} />
+          <TopBar
+            subtitle={meta.subtitle}
+            wordCount={wordCount}
+            onBack={() => setOpened(false)}
+            onAdmin={() => setAdminOpen(true)}
+          />
           <main className="app__main">
-            <FlipBook onClose={() => setOpened(false)} />
+            <FlipBook3D onClose={() => setOpened(false)} />
           </main>
         </>
       ) : (
-        <Landing onOpen={() => setOpened(true)} />
+        <Landing
+          title={meta.title}
+          subtitle={meta.subtitle}
+          eyebrow={meta.coverEyebrow}
+          onOpen={() => setOpened(true)}
+          onAdmin={() => setAdminOpen(true)}
+        />
       )}
-      {toast ? (
-        <div className="toast" role="status">
-          {toast}
-        </div>
-      ) : null}
+      <AdminPanel open={adminOpen} onClose={() => setAdminOpen(false)} />
     </div>
   )
 }

@@ -1,3 +1,14 @@
+export type IllustrationKind =
+  | 'sunshine'
+  | 'first-smile'
+  | 'tiny-hands'
+  | 'garden'
+  | 'first-steps'
+  | 'starry'
+  | 'birthday'
+  | 'snow'
+  | 'custom'
+
 export type MemoryEntry = {
   id: string
   year: number
@@ -5,17 +16,29 @@ export type MemoryEntry = {
   weekday: string
   title: string
   body: string
-  illustration: 'sunshine' | 'first-smile' | 'tiny-hands' | 'garden' | 'first-steps' | 'starry' | 'birthday' | 'snow'
+  illustration: IllustrationKind
+  /** Custom uploaded image as data URL (when illustration === 'custom') */
+  imageDataUrl?: string
   favorite?: boolean
 }
 
-export const YEARS = [2026, 2027, 2028] as const
+export type BookMeta = {
+  title: string
+  subtitle: string
+  coverEyebrow: string
+  backLine: string
+}
 
-export const BOOK_TITLE = '成长手册'
-export const BOOK_SUBTITLE = '送给亲爱的安宝'
-export const WORD_COUNT = 488
+export const DEFAULT_YEARS = [2026, 2027, 2028] as const
 
-export const entries: MemoryEntry[] = [
+export const DEFAULT_META: BookMeta = {
+  title: '成长手册',
+  subtitle: '送给亲爱的安宝',
+  coverEyebrow: 'Memory Book',
+  backLine: '愿每一页，都有光。',
+}
+
+export const DEFAULT_ENTRIES: MemoryEntry[] = [
   {
     id: '2026-01-10',
     year: 2026,
@@ -113,8 +136,36 @@ export const entries: MemoryEntry[] = [
   },
 ]
 
-/** Index in flip-book pages array (after cover page at 0) */
-export function yearToPageIndex(year: number): number {
-  const idx = entries.findIndex((e) => e.year === year)
+/** @deprecated use DEFAULT_ENTRIES via HandbookProvider */
+export const entries = DEFAULT_ENTRIES
+export const BOOK_TITLE = DEFAULT_META.title
+export const BOOK_SUBTITLE = DEFAULT_META.subtitle
+export const YEARS = DEFAULT_YEARS
+export const WORD_COUNT = 488
+
+export function yearToPageIndex(
+  year: number,
+  list: MemoryEntry[] = DEFAULT_ENTRIES,
+): number {
+  const idx = list.findIndex((e) => e.year === year)
   return idx >= 0 ? idx + 1 : 1
+}
+
+export function computeWordCount(list: MemoryEntry[], meta: BookMeta): number {
+  const text = [meta.title, meta.subtitle, meta.backLine, ...list.map((e) => e.title + e.body)].join('')
+  return [...text].length
+}
+
+export function createBlankEntry(year = new Date().getFullYear()): MemoryEntry {
+  const now = new Date()
+  const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  return {
+    id: `entry-${Date.now()}`,
+    year,
+    dateLabel: `${now.getMonth() + 1}月${now.getDate()}日`,
+    weekday: weekdays[now.getDay()] ?? '星期一',
+    title: '新的一页',
+    body: '在这里写下新的记忆……',
+    illustration: 'sunshine',
+  }
 }

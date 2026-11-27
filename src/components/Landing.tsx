@@ -1,10 +1,12 @@
-import { BOOK_SUBTITLE, BOOK_TITLE } from '../data/entries'
-
 type Props = {
+  title: string
+  subtitle: string
+  eyebrow: string
   onOpen: () => void
+  onAdmin: () => void
 }
 
-export function Landing({ onOpen }: Props) {
+export function Landing({ title, subtitle, eyebrow, onOpen, onAdmin }: Props) {
   return (
     <section className="landing">
       <div className="landing__glow" aria-hidden />
@@ -16,9 +18,9 @@ export function Landing({ onOpen }: Props) {
             ))}
           </div>
           <div className="landing__cover-face">
-            <p className="landing__eyebrow">Memory Book</p>
-            <h1 className="landing__brand">{BOOK_TITLE}</h1>
-            <p className="landing__sub">{BOOK_SUBTITLE}</p>
+            <p className="landing__eyebrow">{eyebrow}</p>
+            <h1 className="landing__brand">{title}</h1>
+            <p className="landing__sub">{subtitle}</p>
             <div className="landing__seal" aria-hidden>
               <span>安宝</span>
             </div>
@@ -32,6 +34,9 @@ export function Landing({ onOpen }: Props) {
         </div>
       </button>
       <p className="landing__cta">轻触封面，翻开记忆</p>
+      <button type="button" className="landing__admin" onClick={onAdmin}>
+        管理编辑
+      </button>
     </section>
   )
 }
