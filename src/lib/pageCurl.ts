@@ -5,12 +5,20 @@ export const PAGE_H = 3.25
 export const SEGS_X = 32
 export const SEGS_Y = 18
 
-/** Create plane with spine (left edge) at x=0, extending to +X */
+/**
+ * Create plane with spine (left edge) at x=0, extending to +X.
+ * Y mapping matches Three.js PlaneGeometry (iy=0 at top) so winding/normals stay +Z.
+ */
 export function createPageGeometry(): THREE.PlaneGeometry {
   const geo = new THREE.PlaneGeometry(PAGE_W, PAGE_H, SEGS_X, SEGS_Y)
   const pos = geo.attributes.position as THREE.BufferAttribute
   for (let i = 0; i < pos.count; i++) {
-    pos.setX(i, pos.getX(i) + PAGE_W / 2)
+    const ix = i % (SEGS_X + 1)
+    const iy = Math.floor(i / (SEGS_X + 1))
+    const x = (ix / SEGS_X) * PAGE_W
+    // Match PlaneGeometry: first row is +Y (top)
+    const y = PAGE_H / 2 - (iy / SEGS_Y) * PAGE_H
+    pos.setXYZ(i, x, y, 0)
   }
   pos.needsUpdate = true
   geo.computeVertexNormals()
@@ -25,14 +33,13 @@ export function applyPageCurl(geometry: THREE.PlaneGeometry, progress: number): 
   const pos = geometry.attributes.position as THREE.BufferAttribute
   const p = Math.min(1, Math.max(0, progress))
   const angle = p * Math.PI
-  // Curl radius shrinks slightly as page finishes flat on left
   const radius = PAGE_W / Math.PI
 
   for (let i = 0; i < pos.count; i++) {
     const ix = i % (SEGS_X + 1)
     const iy = Math.floor(i / (SEGS_X + 1))
     const x0 = (ix / SEGS_X) * PAGE_W
-    const y = (iy / SEGS_Y) * PAGE_H - PAGE_H / 2
+    const y = PAGE_H / 2 - (iy / SEGS_Y) * PAGE_H
 
     if (p < 0.0005) {
       pos.setXYZ(i, x0, y, 0)

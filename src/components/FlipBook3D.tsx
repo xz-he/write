@@ -64,7 +64,9 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
           weekday: e.weekday,
           year: e.year,
           illustration: e.illustration,
-          imageDataUrl: e.imageDataUrl?.length ?? 0,
+          imageDataUrl: e.imageDataUrl
+            ? `${e.imageDataUrl.length}:${e.imageDataUrl.slice(-24)}`
+            : '',
           favorite: e.favorite,
         })),
       }),
@@ -90,11 +92,12 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
       start: number
       chainGoal?: number
     } | null = null
+    let pointerMoved = false
 
     const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 40)
-    camera.position.set(0.55, 0.4, 6.4)
-    camera.lookAt(0.55, 0, 0)
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 40)
+    camera.position.set(0.95, 0.35, 5.6)
+    camera.lookAt(PAGE_W * 0.45, 0, 0)
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
@@ -103,60 +106,75 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
     renderer.outputColorSpace = THREE.SRGBColorSpace
     el.appendChild(renderer.domElement)
 
-    scene.add(new THREE.AmbientLight(0xfff8ff, 0.7))
-    const key = new THREE.DirectionalLight(0xfff5ee, 1.2)
-    key.position.set(3.2, 5.2, 4.2)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.95))
+    const key = new THREE.DirectionalLight(0xfff8f0, 1.05)
+    key.position.set(2.8, 5.5, 5)
     key.castShadow = true
     key.shadow.mapSize.set(1024, 1024)
     scene.add(key)
-    const fill = new THREE.DirectionalLight(0xd8c8f0, 0.5)
-    fill.position.set(-3.5, 2.2, 2.5)
+    const fill = new THREE.DirectionalLight(0xe8d8ff, 0.55)
+    fill.position.set(-3.2, 2.5, 3)
     scene.add(fill)
+    const frontLight = new THREE.DirectionalLight(0xffffff, 0.35)
+    frontLight.position.set(0.5, 1, 8)
+    scene.add(frontLight)
 
     const binder = new THREE.Group()
     scene.add(binder)
 
     const lavender = new THREE.MeshStandardMaterial({
       color: '#c9b6e0',
-      roughness: 0.52,
-      metalness: 0.06,
+      roughness: 0.62,
+      metalness: 0.04,
     })
     const lavenderDeep = new THREE.MeshStandardMaterial({
       color: '#a888c4',
-      roughness: 0.55,
-      metalness: 0.08,
+      roughness: 0.58,
+      metalness: 0.06,
     })
 
+    // Back cover board only — no opaque front slab covering pages
     const backBoard = new THREE.Mesh(
-      new THREE.BoxGeometry(PAGE_W + 0.32, PAGE_H + 0.3, 0.1),
+      new THREE.BoxGeometry(PAGE_W + 0.28, PAGE_H + 0.26, 0.1),
       lavender,
     )
-    backBoard.position.set(PAGE_W / 2, 0, -0.1)
+    backBoard.position.set(PAGE_W / 2, 0, -0.12)
     backBoard.castShadow = true
     backBoard.receiveShadow = true
     binder.add(backBoard)
 
-    const spine = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, PAGE_H + 0.3, 0.28),
-      lavenderDeep,
-    )
-    spine.position.set(-0.02, 0, -0.02)
-    spine.castShadow = true
-    binder.add(spine)
-
-    const frontFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(PAGE_W + 0.32, PAGE_H + 0.3, 0.06),
+    // Thin lavender rim (open binder edge) as four slim boxes
+    const rimDepth = 0.05
+    const rimZ = -0.02
+    const rimTop = new THREE.Mesh(
+      new THREE.BoxGeometry(PAGE_W + 0.28, 0.1, rimDepth),
       lavender,
     )
-    frontFrame.position.set(PAGE_W / 2, 0, 0.05)
-    frontFrame.castShadow = true
-    binder.add(frontFrame)
+    rimTop.position.set(PAGE_W / 2, PAGE_H / 2 + 0.08, rimZ)
+    binder.add(rimTop)
+    const rimBot = rimTop.clone()
+    rimBot.position.y = -PAGE_H / 2 - 0.08
+    binder.add(rimBot)
+    const rimRight = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, PAGE_H + 0.26, rimDepth),
+      lavender,
+    )
+    rimRight.position.set(PAGE_W + 0.09, 0, rimZ)
+    binder.add(rimRight)
+
+    const spine = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, PAGE_H + 0.26, 0.3),
+      lavenderDeep,
+    )
+    spine.position.set(-0.04, 0, -0.04)
+    spine.castShadow = true
+    binder.add(spine)
 
     const strap = new THREE.Mesh(
       new THREE.BoxGeometry(0.15, 0.45, 0.12),
       new THREE.MeshStandardMaterial({ color: '#9b7bb8', roughness: 0.4, metalness: 0.12 }),
     )
-    strap.position.set(PAGE_W + 0.08, 0.08, 0.14)
+    strap.position.set(PAGE_W + 0.1, 0.08, 0.08)
     binder.add(strap)
 
     const ringMat = new THREE.MeshStandardMaterial({
@@ -167,14 +185,14 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
     for (let i = 0; i < 6; i++) {
       const ring = new THREE.Mesh(new THREE.TorusGeometry(0.095, 0.02, 14, 32), ringMat)
       ring.rotation.y = Math.PI / 2
-      ring.position.set(0.04, PAGE_H * 0.38 - (i / 5) * PAGE_H * 0.76, 0.04)
+      ring.position.set(0.05, PAGE_H * 0.38 - (i / 5) * PAGE_H * 0.76, 0.05)
       ring.castShadow = true
       binder.add(ring)
     }
 
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(10, 10),
-      new THREE.ShadowMaterial({ opacity: 0.2 }),
+      new THREE.ShadowMaterial({ opacity: 0.18 }),
     )
     ground.rotation.x = -Math.PI / 2
     ground.position.y = -PAGE_H / 2 - 0.4
@@ -182,13 +200,17 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
     scene.add(ground)
 
     const pagesRoot = new THREE.Group()
-    pagesRoot.position.set(0.02, 0, 0.09)
+    pagesRoot.position.set(0.04, 0, 0.04)
     scene.add(pagesRoot)
 
     function texFrom(canvas: HTMLCanvasElement) {
       const t = new THREE.CanvasTexture(canvas)
       t.colorSpace = THREE.SRGBColorSpace
       t.anisotropy = renderer.capabilities.getMaxAnisotropy()
+      t.minFilter = THREE.LinearFilter
+      t.magFilter = THREE.LinearFilter
+      t.generateMipmaps = false
+      t.needsUpdate = true
       return t
     }
 
@@ -206,10 +228,20 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
         else p = 0
         setSheetProgress(sheet, p)
 
-        let z = 0.02 - i * 0.0012
-        if (i < current) z = -0.012 - (current - i) * 0.0015
-        if (i === flippingIndex && flipProgress > 0 && flipProgress < 1) z = 0.1
+        let z = 0.03 - i * 0.002
+        if (i < current) z = -0.02 - (current - i) * 0.002
+        if (i === flippingIndex && flipProgress > 0 && flipProgress < 1) z = 0.14
         sheet.group.position.z = z
+
+        // Only keep nearby sheets visible to avoid stacking artifacts
+        const near =
+          i === flippingIndex ||
+          i === current ||
+          i === current - 1 ||
+          i === current + 1 ||
+          (i < current && i >= current - 2) ||
+          (i > current && i <= current + 2)
+        sheet.group.visible = near || i === 0 || i === sheets.length - 1
       }
     }
 
@@ -250,8 +282,8 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
           const ctx = canvasBack.getContext('2d')!
           ctx.fillStyle = '#f0ebe3'
           ctx.fillRect(0, 0, PAGE_TEX_W, PAGE_TEX_H)
-          ctx.fillStyle = 'rgba(150,130,160,0.25)'
-          ctx.font = '28px "Ma Shan Zheng", cursive'
+          ctx.fillStyle = 'rgba(150,130,160,0.35)'
+          ctx.font = '28px "Ma Shan Zheng", "ZCOOL XiaoWei", serif'
           ctx.textAlign = 'center'
           ctx.fillText(meta.title, PAGE_TEX_W / 2, PAGE_TEX_H / 2)
         }
@@ -261,29 +293,29 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
         backTex.wrapS = THREE.RepeatWrapping
         backTex.repeat.x = -1
         backTex.offset.x = 1
+        backTex.needsUpdate = true
 
         const geoFront = createPageGeometry()
         const geoBack = createPageGeometry()
+
+        // BasicMaterial guarantees canvas text is visible regardless of lights
         const front = new THREE.Mesh(
           geoFront,
-          new THREE.MeshStandardMaterial({
+          new THREE.MeshBasicMaterial({
             map: frontTex,
-            roughness: 0.78,
-            metalness: 0.02,
             side: THREE.FrontSide,
+            toneMapped: false,
           }),
         )
         const back = new THREE.Mesh(
           geoBack,
-          new THREE.MeshStandardMaterial({
+          new THREE.MeshBasicMaterial({
             map: backTex,
-            roughness: 0.85,
-            metalness: 0,
             side: THREE.BackSide,
+            toneMapped: false,
           }),
         )
         front.castShadow = true
-        front.receiveShadow = true
         back.castShadow = true
 
         const group = new THREE.Group()
@@ -348,10 +380,12 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
       if (disposed) return
       animFrame = requestAnimationFrame(tick)
       const t = clock.getElapsedTime()
-      binder.rotation.y = Math.sin(t * 0.32) * 0.028
-      binder.position.y = Math.sin(t * 0.5) * 0.018
-      pagesRoot.rotation.y = binder.rotation.y
-      pagesRoot.position.y = binder.position.y
+      const bobY = Math.sin(t * 0.5) * 0.015
+      const sway = Math.sin(t * 0.32) * 0.035
+      binder.rotation.y = sway
+      binder.position.y = bobY
+      pagesRoot.rotation.y = sway
+      pagesRoot.position.y = bobY
 
       if (flipAnim) {
         const u = Math.min(1, (performance.now() - flipAnim.start) / FLIP_MS)
@@ -381,11 +415,13 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
 
     const onPointerDown = (ev: PointerEvent) => {
       if (flipping) return
+      pointerMoved = false
       drag = { startX: ev.clientX }
       el.setPointerCapture(ev.pointerId)
     }
     const onPointerMove = (ev: PointerEvent) => {
       if (!drag || flipping) return
+      if (Math.abs(ev.clientX - drag.startX) > 8) pointerMoved = true
       const dx = ev.clientX - drag.startX
       const progress = Math.max(0, Math.min(1, Math.abs(dx) / (el.clientWidth * 0.38)))
       const cur = pageIndexRef.current
@@ -406,15 +442,6 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
         applyPose(cur, 0, cur)
       }
     }
-    let pointerMoved = false
-    const onPointerDown2 = (ev: PointerEvent) => {
-      pointerMoved = false
-      onPointerDown(ev)
-    }
-    const onPointerMove2 = (ev: PointerEvent) => {
-      if (drag && Math.abs(ev.clientX - drag.startX) > 8) pointerMoved = true
-      onPointerMove(ev)
-    }
     const onClick = (ev: MouseEvent) => {
       if (flipping || pointerMoved) return
       const rect = el.getBoundingClientRect()
@@ -424,14 +451,15 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
       else if (x < rect.width * 0.4 && cur > 0) apiRef.current?.flipTo(cur - 1, true)
     }
 
-    el.addEventListener('pointerdown', onPointerDown2)
-    el.addEventListener('pointermove', onPointerMove2)
+    el.addEventListener('pointerdown', onPointerDown)
+    el.addEventListener('pointermove', onPointerMove)
     el.addEventListener('pointerup', finishDrag)
     el.addEventListener('pointercancel', finishDrag)
     el.addEventListener('click', onClick)
 
     void document.fonts.ready
       .then(() => buildSheets())
+      .catch(() => buildSheets())
       .then(() => {
         if (!disposed) tick()
       })
@@ -440,8 +468,8 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
       disposed = true
       cancelAnimationFrame(animFrame)
       ro.disconnect()
-      el.removeEventListener('pointerdown', onPointerDown2)
-      el.removeEventListener('pointermove', onPointerMove2)
+      el.removeEventListener('pointerdown', onPointerDown)
+      el.removeEventListener('pointermove', onPointerMove)
       el.removeEventListener('pointerup', finishDrag)
       el.removeEventListener('pointercancel', finishDrag)
       el.removeEventListener('click', onClick)
@@ -455,7 +483,6 @@ export function FlipBook3D({ onClose: _onClose }: Props) {
       renderer.dispose()
       if (renderer.domElement.parentElement === el) el.removeChild(renderer.domElement)
     }
-    // contentKey intentionally drives full rebuild
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentKey])
 
